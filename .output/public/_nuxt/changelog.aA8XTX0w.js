@@ -1,0 +1,1 @@
+import{u as e,c as t,o,a as s}from"./entry.mCwXEhA-.js";const a={class:"h-full w-full text-center"},c=s("h2",null,"Changelog",-1),l=[c],u={__name:"changelog",setup(n){return e({title:"Changelog"}),(_,r)=>(o(),t("div",a,l))}};export{u as default};

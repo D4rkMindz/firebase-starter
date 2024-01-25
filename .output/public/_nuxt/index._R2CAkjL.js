@@ -1,0 +1,1 @@
+import{j as o,f as n,k as a,u,o as r,c,t as i}from"./entry.mCwXEhA-.js";const g=o({__name:"index",setup(p){const{t}=n(),e=a();return e==null||e.signOut(),u({title:t("Logout")}),(s,l)=>(r(),c("p",null,i(s.$t("Logging you out"))+"...",1))}});export{g as default};
