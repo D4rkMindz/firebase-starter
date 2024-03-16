@@ -173,9 +173,9 @@ useHead({
 
                     <InputField v-model="email" :label="$t('Email')" type="email" />
 
-                    <PhoneInputField v-model="phoneNumber" /><!-- @country-selected="(e) => console.log(e)"-->
+                    <PhoneInputField v-model="phoneNumber" />
 
-                    <div class="card-actions">
+                    <div class="card-actions justify-end">
                         <button class="btn btn-primary" type="submit">{{ $t('Save') }}</button>
                     </div>
                 </form>
