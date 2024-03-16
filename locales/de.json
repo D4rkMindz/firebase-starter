@@ -32,5 +32,12 @@
   "Already have an account?": "Hast Du bereits einen Account?",
   "auth/email-already-in-use": "Diese E-Mail ist bereits in Verwendung. Bitte melde Dich an.",
   "Changelog": "Changelog",
-  "Home": "Start"
+  "Home": "Start",
+  "Your Picture": "Dein Bild",
+  "Click to select a picture or drop one here": "Click to select a picture or drop one here",
+  "Your profile picture": "Dein Profilbild",
+  "Replace": "Ersetzen",
+  "Name": "Name",
+  "Phone": "Telefon",
+  "Save": "Speichern"
 }

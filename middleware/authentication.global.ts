@@ -1,9 +1,9 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async (to /*, from*/) => {
     if (process.server) {
         return;
     }
 
-    if (to.meta.layout == "auth") {
+    if (to.meta.layout == 'auth') {
         return;
     }
 
@@ -12,15 +12,15 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     // redirect the user to the login page
     if (!user) {
         let redirect = to.fullPath;
-        if (to?.name?.toString().split("___")[0] === "logout") {
-            redirect = "/";
+        if (to?.name?.toString().split('___')[0] === 'logout') {
+            redirect = '/';
         }
 
         return navigateTo({
             path: '/login',
             query: {
-                redirect: redirect
+                redirect: redirect,
             },
         });
     }
-})
+});

@@ -1,52 +1,62 @@
 <template>
-  <div class="form-control w-full mb-2">
-    <label v-if="label" class="label" :for="id">
-      <span class="label-text">{{ label }}</span>
-    </label>
+    <div class="form-control w-full mb-2">
+        <label v-if="label" :for="id" class="label">
+            <span class="label-text">{{ label }}</span>
+        </label>
 
-    <Field :name="id"
-           :type="type"
-           class="input input-bordered w-full"
-           :value="modelValue"
-           @input.prevent.stop="updateInput"
-           v-bind="$attrs"
-    />
+        <Field :name="id">
+            <input
+                :id="id"
+                :type="type"
+                :value="modelValue"
+                class="input input-bordered w-full"
+                v-bind="$attrs"
+                @input.prevent="(e) => updateInput(e)"
+            />
+        </Field>
 
-    <ErrorMessage :name="id" class="text-error text-xs mt-2 mb-2"/>
-  </div>
+        <ErrorMessage :name="id" class="text-error text-xs mt-2 mb-2" />
+    </div>
 </template>
 
 <script>
-import {Field, ErrorMessage} from "vee-validate";
+import { ErrorMessage, Field } from 'vee-validate';
 
 export default {
-  name: "BaseInput",
-  components: {
-    Field,
-    ErrorMessage,
-  },
-  props: {
-    id: {
-      type: String,
-      default: "",
+    name: 'BaseInput',
+    components: {
+        Field,
+        ErrorMessage,
     },
-    label: {
-      type: String,
-      default: "",
+    props: {
+        id: {
+            type: String,
+            default: '',
+        },
+        label: {
+            type: String,
+            default: '',
+        },
+        modelValue: {
+            type: [String, Number],
+            default: '',
+        },
+        type: {
+            type: String,
+            default: 'text',
+        },
     },
-    modelValue: {
-      type: [String, Number],
-      default: "",
+    emits: ['update:modelValue'],
+    watch: {
+        modelValue(value) {
+            console.log('[Baseinput] watcher:', value);
+        },
     },
-    type: {
-      type: String,
-      default: "text",
-    }
-  },
-  methods: {
-    updateInput(event) {
-      this.$emit("update:modelValue", event.target.value);
+    methods: {
+        updateInput(event) {
+            console.log('[Baseinput] updateInput: ', event);
+            this.$emit('update:modelValue', event.target.value);
+        },
     },
-  }
 };
 </script>

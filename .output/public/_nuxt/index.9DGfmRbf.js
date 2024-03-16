@@ -1,1 +1,0 @@
-import{f as a,u as o,g as r,h as s,c as n,t as c,i as u,o as _}from"./entry.mCwXEhA-.js";const i={key:0},f={__name:"index",setup(l){const{t}=a();o({title:t("Home")});const e=r();return(m,p)=>s(e)?(_(),n("p",i,"Hello "+c(s(e).displayName),1)):u("",!0)}};export{f as default};

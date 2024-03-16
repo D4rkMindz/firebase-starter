@@ -1,11 +1,11 @@
 interface ErrorField {
-    field: string,
-    message: string,
+    field: string;
+    message: string;
 }
 
 interface ErrorData {
-    type: string | null,
-    errors: ErrorField[]
+    type: string | null;
+    errors: ErrorField[];
 }
 
 export class Result<Data = never> {
@@ -17,9 +17,8 @@ export class Result<Data = never> {
     constructor(
         public message?: string,
         public success: boolean = false,
-        private data: Data | null = null
-    ) {
-    }
+        private data: Data | null = null,
+    ) {}
 
     public setData(data: Data): this {
         this.data = data;
@@ -31,11 +30,11 @@ export class Result<Data = never> {
     }
 
     public addError(field: string, message: string): this {
-        this.error.errors.push({field: field, message: message});
+        this.error.errors.push({ field: field, message: message });
         return this;
     }
 
-    public getError(field: string, separator: string = ", "): string {
+    public getError(field: string, separator: string = ', '): string {
         let errorMessage = '';
         for (let i = 0; i < this.error.errors.length; i++) {
             if (this.error.errors[i].field == field) {
@@ -44,18 +43,18 @@ export class Result<Data = never> {
         }
 
         if (errorMessage.endsWith(separator)) {
-            errorMessage = errorMessage.slice(0, -(separator.length));
+            errorMessage = errorMessage.slice(0, -separator.length);
         }
 
         if (!errorMessage) {
-            throw new Error("Field " + field + " has no error");
+            throw new Error('Field ' + field + ' has no error');
         }
 
         return errorMessage;
     }
 
     public hasError(field: string): boolean {
-        return this.error.errors.some(error => error.field == field);
+        return this.error.errors.some((error) => error.field == field);
     }
 
     public setErrorType(type: string): this {

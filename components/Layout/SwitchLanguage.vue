@@ -1,42 +1,48 @@
 <template>
-  <div class="dropdown dropdown-end mr-2" :class="{'dropdown-top': dropUp }">
-    <label tabindex="0" class="btn btn-ghost">
-      <LanguageIcon class="icon"/>
-      <span class="hidden lg:block">
-        <ChevronDownIcon class="icon" v-if="!dropUp"/>
-        <ChevronUpIcon class="icon" v-if="dropUp"/>
-      </span>
-    </label>
-    <ul tabindex="0"
-        class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 text-base-content rounded-box w-52">
-      <li v-for="locale in locales" :key="locale.code">
-        <NuxtLink :to="switchLocalePath(locale.code)">
-          {{ locale.name }}
-        </NuxtLink>
-      </li>
-    </ul>
-  </div>
+    <div :class="{ 'dropdown-top': dropUp }" class="dropdown dropdown-end mr-2">
+        <label class="btn btn-ghost" tabindex="0">
+            <LanguageIcon class="icon" />
+            <span class="hidden lg:block">
+                <ChevronDownIcon v-if="!dropUp" class="icon" />
+                <ChevronUpIcon v-if="dropUp" class="icon" />
+            </span>
+        </label>
+        <ul
+            class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52 text-base-content"
+            tabindex="0"
+        >
+            <li v-for="locale in locales" :key="locale.code">
+                <NuxtLink :to="switchLocalePath(locale.code)">
+                    {{ locale.name }}
+                </NuxtLink>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script setup>
-import {ChevronDownIcon, ChevronUpIcon, LanguageIcon} from "@heroicons/vue/24/solid";
+import {
+    ChevronDownIcon,
+    ChevronUpIcon,
+    LanguageIcon,
+} from '@heroicons/vue/24/solid';
 
 const switchLocalePath = useSwitchLocalePath();
-const {locales} = useI18n();
+const { locales } = useI18n();
 
 defineComponent({
-  name: 'SwitchLanguage',
+    name: 'SwitchLanguage',
 });
 defineProps({
-  dropUp: {
-    type: Boolean,
-    default: false,
-  }
-})
+    dropUp: {
+        type: Boolean,
+        default: false,
+    },
+});
 </script>
 
 <style scoped>
 .icon {
-  @apply w-6 h-6 stroke-current;
+    @apply w-6 h-6 stroke-current;
 }
 </style>

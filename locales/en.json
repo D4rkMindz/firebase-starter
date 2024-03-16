@@ -32,5 +32,12 @@
   "Already have an account?": "Already have an account?",
   "auth/email-already-in-use": "Email is already signed up. Please use the login.",
   "Changelog": "Changelog",
-  "Home": "Home"
+  "Home": "Home",
+  "Your Picture": "Your Picture",
+  "Click to select a picture or drop one here": "Click to select a picture or drop one here",
+  "Your profile picture": "Your profile picture",
+  "Replace": "Replace",
+  "Name": "Name",
+  "Phone": "Phone",
+  "Save": "Save"
 }
