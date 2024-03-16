@@ -3,6 +3,14 @@ import countryData from '~/data/countries.json';
 import phoneMasks from '~/data/phone-masks.json';
 import BaseInput from '~/components/Form/BaseInput.vue';
 
+const config = {
+    country: {
+        main: 'CH',
+        mostUsed: ['CH', 'DE', 'AT'],
+    },
+};
+
+const emit = defineEmits(['update:modelValue', 'countrySelected']);
 const props = defineProps({
     id: {
         type: String,
@@ -33,31 +41,25 @@ interface Country {
     dial_code: string;
 }
 
-const emit = defineEmits(['update:modelValue', 'countrySelected']);
-
-const mainCountry = 'CH';
-const mostUsedCountriesCodes = [mainCountry, 'DE', 'AT'];
-const mostUsedCountries: Country[] = countryData.filter((c) => mostUsedCountriesCodes.includes(c.code));
-const countries = ref<Country[]>(mostUsedCountries.concat(countryData));
-let preselectedCountry: Country = mostUsedCountries.filter((c) => c.code === mainCountry)[0];
+const mostUsedCountries: Country[] = countryData.filter((c) => config.country.mostUsed.includes(c.code));
+let preselectedCountry: Country = mostUsedCountries.filter((c) => c.code === config.country.main)[0];
 let preselectedCountryIndex = -1;
+
 if (props.modelValue && props.modelValue.toString().startsWith('+')) {
-    const parts = props.modelValue.toString()?.split(' ');
-    const code = parts[0];
-    console.log('code: ' + code);
-    const filtered = countryData.filter((c) => c.dial_code === code);
+    const code = props.modelValue.toString()?.split(' ')[0];
+    const filtered = countryData.filter((c: Country) => c.dial_code === code);
     if (filtered.length > 0) {
         preselectedCountry = filtered[0];
         preselectedCountryIndex = countryData.findIndex((c) => c.dial_code === code);
-        parts.shift();
     }
 }
+
+const countries = ref<Country[]>(mostUsedCountries.concat(countryData));
 const country = ref<Country>(preselectedCountry);
 const selectedIndex = ref<number>(preselectedCountryIndex);
-const component = ref<any | null>(null);
+const component = ref<HTMLElement | null>(null);
 
 const phoneNumber = computed(() => {
-    console.log('[PhoneFieldInput] Model value:', props.modelValue);
     let modelValue = props.modelValue?.toString();
     if (modelValue.startsWith('00')) {
         modelValue = modelValue.replace('00', '+');
@@ -76,15 +78,21 @@ const phoneNumber = computed(() => {
         return withoutCountryCode;
     }
 
-    const masked = applyMask(withoutCountryCode).replace(country.value.dial_code, '').trim();
-    console.log('[PhoneFieldInput] Masked computed value:', masked);
-    return masked;
+    return applyMask(withoutCountryCode).replace(country.value.dial_code, '').trim();
 });
 
-function updatePhoneNumber(newValue: string) {
-    emit('update:modelValue', applyMask(newValue));
+/**
+ * Emit an update
+ * @param {String} newPhoneNumber - The new phone number
+ */
+function updatePhoneNumber(newPhoneNumber: string) {
+    emit('update:modelValue', applyMask(newPhoneNumber));
 }
 
+/**
+ * Apply the correct mask to a phone number based on the currently selected country
+ * @param {String} unmaskedPhoneNumberWithoutCountryCode - The phone number WITHOUT a country code
+ */
 function applyMask(unmaskedPhoneNumberWithoutCountryCode: string) {
     const filteredMasks = phoneMasks
         .filter((p: PhoneMask) => p.code.startsWith(country.value.dial_code))
@@ -106,9 +114,7 @@ function applyMask(unmaskedPhoneNumberWithoutCountryCode: string) {
     // const ordered = filteredMasks.filter(
     //     (p: PhoneMask) => p.code.length >= unmaskedPhoneNumberWithoutCountryCode.length,
     // );
-    // console.log('Ordered', ordered);
     // const mask = ordered.shift()?.code || defaultMask;
-    console.log('mask', mask);
 
     let i = 0;
     const val = unmaskedPhoneNumberWithoutCountryCode.replace(/\D/g, '');
@@ -124,34 +130,50 @@ function applyMask(unmaskedPhoneNumberWithoutCountryCode: string) {
     if (i < val.length) {
         masked += val.substring(i, val.length);
     }
-    console.log('masked', masked);
     return masked;
 }
 
+/**
+ * Set the currently selected country
+ * @param {Country} c - The selected country
+ */
 function setCountry(c: Country) {
     country.value = c;
-    emit('countrySelected', c);
-    component.value?.querySelector('#' + props.id).focus();
+    emit('countrySelected', country.value);
+    component.value?.querySelector<HTMLInputElement>('#' + props.id)?.focus();
 }
 
+/**
+ * Persist the currently selected country
+ */
 function setSelectedCountry() {
     if (selectedIndex.value > -1 && selectedIndex.value < countries.value.length) {
         setCountry(countries.value[selectedIndex.value]);
     }
 }
 
+/**
+ * Decrease the current selected country index by one
+ */
 function decreaseIndex() {
     if (selectedIndex.value > -1) {
         selectedIndex.value = selectedIndex.value - 1;
     }
 }
 
+/**
+ * Increase the current selected country index by one
+ */
 function increaseIndex() {
     if (selectedIndex.value < countries.value.length) {
         selectedIndex.value = selectedIndex.value + 1;
     }
 }
 
+/**
+ * Filter all available countries based on the users input
+ * @param {KeyboardEvent} e
+ */
 function filterCountries(e: KeyboardEvent | any) {
     const search = e.target?.value;
     const isNext = e.key === 'ArrowDown';
@@ -183,8 +205,8 @@ function filterCountries(e: KeyboardEvent | any) {
     if (!isNavigationEvent && (selectedIndex.value === -1 || selectedIndex.value > countries.value.length)) {
         selectedIndex.value = 0;
     }
-    const list = document.querySelector('[data-countries]');
-    if (!list) {
+    const list: HTMLElement | Element | null = document.querySelector('[data-countries]') || null;
+    if (!list || !(list instanceof HTMLElement)) {
         return;
     }
     const selected = list.querySelector('li.selected');
@@ -199,12 +221,10 @@ function filterCountries(e: KeyboardEvent | any) {
         index -= 1;
     }
 
-    const item = selected?.parentNode?.children.item(index);
-    if (!item) {
+    const item: HTMLElement | any = selected?.parentNode?.children.item(index);
+    if (!item || !(item instanceof HTMLElement)) {
         return;
     }
-
-    // console.log(`window: ${list.scrollTop} to ${list.scrollTop + list.offsetHeight} and item position is ${item.offsetTop} to ${item.offsetTop + item.offsetHeight} (scroll: ${item.offsetTop - list.offsetHeight})for item ${currentIndex}: ${item.innerText}`);
 
     if (item.offsetTop + item.offsetHeight >= list.scrollTop + list.offsetHeight) {
         list.scrollTo({ top: item.offsetTop - list.offsetHeight + item.offsetHeight });
@@ -214,6 +234,9 @@ function filterCountries(e: KeyboardEvent | any) {
     }
 }
 
+/**
+ * Focus the search box input
+ */
 function focusCountrySearch() {
     document.getElementById('country-search')?.focus();
 }
@@ -224,6 +247,7 @@ function focusCountrySearch() {
         <label class="w-full text-left label-text" for="phone">
             {{ label || $t('Phone') }}
         </label>
+
         <div ref="input" class="w-full flex flex-row">
             <div class="dropdown dropdown-top dropdown-start">
                 <div
@@ -234,6 +258,7 @@ function focusCountrySearch() {
                 >
                     {{ country?.dial_code }}
                 </div>
+
                 <div class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-96" tabindex="0">
                     <div class="flex flex-col max-h-80">
                         <ul class="overflow-y-scroll" data-countries>
@@ -246,10 +271,12 @@ function focusCountrySearch() {
                             >
                                 <div class="flex flex-row justify-between">
                                     <span>{{ c.flag }}&nbsp;{{ c.dial_code }}</span>
+
                                     <span class="text-right">{{ c.name }}</span>
                                 </div>
                             </li>
                         </ul>
+
                         <div class="mt-2 mb-2">
                             <input
                                 id="country-search"
